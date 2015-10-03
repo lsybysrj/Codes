@@ -74,6 +74,7 @@ int main()
   */
 
   GLFWwindow* window= glfwCreateWindow(1920,1080,"myglfw",0,0);
+  glfwMakeContextCurrent(window);
   glfwSetKeyCallback(window,mykey);
   glfwShowWindow(window);
   const GLubyte* version=glGetString(GL_VERSION);
