@@ -1,0 +1,56 @@
+<html>
+	<head>
+	<style>
+	h1
+	{
+		color:green;
+		font-size:10px;
+	}
+	h1:hover
+	{
+		color:red;
+		font-size:30px;
+	}
+	</style>
+	</head>
+	<body>
+		<h1>h1 for begining~</h1>
+		<input class="mybutton" id="mybutton"></input>
+	</body>
+	<script>
+function myfun()
+{
+	alert("from myfun");
+	return false;
+}
+function mykey(event)
+{
+	keynum=event.which;
+	keystr=String.fromCharCode(keynum);
+	switch(keystr)
+	{
+		case 'a':
+			document.getElementById("mybutton").style.webkitTransform="rotate("+ang+"deg)";
+			ang-=10;
+			break;
+		case 'd':
+			document.getElementById("mybutton").style.webkitTransform="rotate("+ang+"deg)";
+			ang+=10;
+			break;
+		default:
+			break;
+	}
+	return true;
+}
+alert("test");
+document.getElementById("mybutton").textContent="Button";
+document.getElementById("mybutton").onclick=myfun;
+var ang=1;
+//document.onkeypress=mykey;
+document.getElementById("mybutton").onkeypress=mykey;
+	</script>
+
+</html>
+
+
+

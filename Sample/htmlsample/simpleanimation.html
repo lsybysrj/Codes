@@ -1,0 +1,21 @@
+<html>
+<head>
+<script type="text/javascript">
+function myonclick(v)
+{
+	alert("v is "+v);
+	ang=parseInt(v);
+	ang+=5;
+	ang%=360;
+	document.getElementById("button").textContent=parseInt(v+1);
+	document.getElementById("button").style.webkitTransform="rotate("+ang+"deg)";
+	fontsize=ang%70;
+	document.getElementById("button").style.fontSize=fontsize;
+}
+</script>
+</head>
+<h1 id="123">myh1 without a event</h1>
+<button type="button" onclick="setInterval('myonclick('+this.textContent+')',3000)" id="button">1 </button>
+<body>
+</body>
+</html>

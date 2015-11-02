@@ -1,0 +1,49 @@
+mynode myem
+{
+color:green;
+font-size:100%;
+}
+mynode > myem
+{
+	color:blue;
+
+}
+
+mynode a:after
+{
+	content:url("/Users/lsyb/Music/01\ The\ Show.mp3");
+}
+
+mynode a
+{
+font-size:30;
+float:left;
+background:blue;
+}
+mynode a:link
+{
+	background:green;
+}
+mynode a:visited
+{
+	background:red;
+	text-decoration:busy;
+}
+mynode a:hover
+{
+	text-decoration:underline;
+	background:#FFFF00;
+}
+mynode img
+{
+	float:left;
+	clear:left;
+	height:30%;
+}
+img
+{
+	float:left;
+	clear:left;
+	height:60%;
+
+}
