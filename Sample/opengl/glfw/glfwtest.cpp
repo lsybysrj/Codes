@@ -3,23 +3,55 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <fstream>
 
-#if defined(__APPLE_CC__)
- #if defined(GLFW_INCLUDE_GLCOREARB)
-  #warning "#include <OpenGL/gl3.h>"
-  #if defined(GLFW_INCLUDE_GLEXT)
-    #warning "#include <OpenGL/gl3ext.h>"
-  #endif
- #elif !defined(GLFW_INCLUDE_NONE)
-  #if !defined(GLFW_INCLUDE_GLEXT)
-   #warning "#define GL_GLEXT_LEGACY"
-  #endif
-  #warning "#include <OpenGL/gl.h>"
- #endif
- #if defined(GLFW_INCLUDE_GLU)
-  #warning "#include <OpenGL/glu.h>"
- #endif
-#endif
+GLuint pid=0;
+
+void loadShaderFromFile(GLenum type,const char* filename)
+{
+  int errid=GL_NO_ERROR;
+  std::ifstream ifs;
+  ifs.open(filename,std::ifstream::in);
+  int length=0;
+  ifs.seekg(0,std::ifstream::end);
+  length=ifs.tellg();
+  ifs.seekg(0,std::ifstream::beg);
+  char* f=new char[length];
+  ifs.read(f,length);
+  printf("%.*s\n",length,f);
+  printf("file length: %d\n",length);
+  GLuint sid=glCreateShader(type); 
+  if((errid=glGetError())!=GL_NO_ERROR)
+  {
+    printf("glCreateShader faile,errid: %x\n",errid);
+  }
+  if(glIsShader(sid)!=GL_TRUE)
+  {
+    printf("sid: %d is not a shader\n",sid);
+  }
+  printf("sid is %d\n",sid);
+  glShaderSource(sid,1,&f,&length);
+  if((errid=glGetError())!=GL_NO_ERROR)
+  {
+    printf("glShaderSource failed,errod code: 0x%x\n",errid);
+  }
+  glCompileShader(sid);
+
+  GLint compileStatus=GL_TRUE;
+  glGetShaderiv(sid,GL_COMPILE_STATUS,&compileStatus);
+  if(GL_TRUE!=compileStatus)
+  {
+    int loglength=0;
+    glGetShaderiv(sid,GL_INFO_LOG_LENGTH,&loglength);
+    char* logbuffer=new char[loglength];
+    glGetShaderInfoLog(sid,loglength,&loglength,logbuffer);
+
+    printf("shader compile log: %*s\n",loglength,logbuffer);
+  }
+   glAttachShader(pid,sid);
+  delete f;
+  ifs.close();
+}
 
 
 GLuint nList=0,nCircleList=0;
@@ -46,10 +78,10 @@ void mykey(GLFWwindow* w,int key,int scancode,int action,int modifer)
       glTranslatef(100,0.0f,0.0f);
       break;
     case GLFW_KEY_S:
-      glTranslatef(0,0,-1.0f);
+      glTranslatef(0,0,-0.5f);
       break;
     case GLFW_KEY_W:
-      glTranslatef(0,0,1.0f);
+      glTranslatef(0,0,0.5f);
       break;
     default:
       break;
@@ -61,26 +93,37 @@ void mykey(GLFWwindow* w,int key,int scancode,int action,int modifer)
 int main()
 {
 
+  GLuint codeid=GL_NO_ERROR;
   if(!glfwInit())
   {
     printf("cannot init glfw\n");
     return 0;
   }
- /* 
+  /*
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,1);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-  */
+ */ 
 
   GLFWwindow* window= glfwCreateWindow(1920,1080,"myglfw",0,0);
   glfwMakeContextCurrent(window);
   glfwSetKeyCallback(window,mykey);
   glfwShowWindow(window);
+  /*
   const GLubyte* version=glGetString(GL_VERSION);
   const GLubyte* vendor=glGetString(GL_VENDOR);
   const GLubyte* ext=glGetString(GL_EXTENSIONS);
- // printf("version is %s , vendor is %s , extensions are %s\n",version,vendor,ext);
+  printf("version is %s , vendor is %s , extensions are %s\n",version,vendor,ext);
+  */
+
+  pid=glCreateProgram();
+  loadShaderFromFile(GL_VERTEX_SHADER,"./vertex.vs");
+  loadShaderFromFile(GL_FRAGMENT_SHADER,"./frag.fs");
+  glLinkProgram(pid);
+  glUseProgram(pid);
+
+    
   glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
   glHint(GL_LINE_SMOOTH,GL_NICEST);
   glHint(GL_POLYGON_SMOOTH,GL_NICEST);
@@ -98,7 +141,7 @@ int main()
 
   nList=glGenLists(1);
   glNewList(nList,GL_COMPILE);
-  glEnable(GL_POLYGON_STIPPLE);
+  //glEnable(GL_POLYGON_STIPPLE);
   glPolygonStipple((const GLubyte*)stipple);
   glBegin(GL_POLYGON);
   glVertex3i(-2500,2500,-100);
@@ -120,8 +163,8 @@ int main()
   while(!glfwWindowShouldClose(window))
   {
     glClear(GL_COLOR_BUFFER_BIT);
-  //  glCallList(nList);
-    glCallList(nCircleList);
+    glCallList(nList);
+//    glCallList(nCircleList);
     glfwSwapBuffers(window);
     glfwPollEvents();
   } 
