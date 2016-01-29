@@ -1,4 +1,4 @@
-iport socket
+import socket
 import io
 import sys
 
